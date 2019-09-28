@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
+using System.IO;
 
 namespace HeartlyBot
 {
@@ -24,14 +25,14 @@ namespace HeartlyBot
             Start:
             try
             {
-                Console.WriteLine("Welcome, Brady. Initializing Bot...");
+                Console.WriteLine("Welcome, Brady. Initializing HeartlyBot...");
                 client = new DiscordSocketClient();
                 Console.WriteLine("Client Initialized.");
                 commands = new CommandService();
                 Console.WriteLine("Command Service Initialized.");
                 await InstallCommands();
                 Console.WriteLine("Commands Installed, logging in.");
-                await client.LoginAsync(TokenType.Bot, /*INSERT TOKEN*/);
+                await client.LoginAsync(TokenType.Bot, File.ReadAllText("token"));
                 Console.WriteLine("Successfully logged in!");
                 // Connect the client to Discord's gateway
                 await client.StartAsync();
@@ -75,7 +76,7 @@ namespace HeartlyBot
             if (message == null) return;
             int argPos = 0;
 
-            if (message.HasCharPrefix('+', ref argPos))
+            if (message.HasStringPrefix("<3", ref argPos))
             {
 
                 var context = new CommandContext(client, message);
