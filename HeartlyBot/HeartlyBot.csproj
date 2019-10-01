@@ -162,5 +162,9 @@
   <ItemGroup>
     <None Include="bin\Debug\token" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\commonwords.txt" />
+    <Content Include="bin\Debug\words.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
