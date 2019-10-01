@@ -44,76 +44,25 @@ namespace HeartlyBot
         public async Task Anagram([Remainder] string text)
         {
             text = text.ToLower();
-            char[] allowedChars = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-
-            Dictionary<char, int> charDict = new Dictionary<char, int>();
-
-            foreach (char c in text)
+            var hashedDictionary = new Dictionary<string, int>();
+            var words = File.ReadAllLines("commonwords.txt");
+            foreach(string word in words)
             {
-                if (allowedChars.Contains(c))
+                try
                 {
-                    if (charDict.ContainsKey(c)) charDict[c]++;
-                    else charDict.Add(c, 1);
+                    var alphabetical = word.OrderBy(x => x);
+                    string alph = "";
+                    foreach (char c in alphabetical) alph += c;
+                    hashedDictionary.Add(alph, Hash(alph));
                 }
-            }
-            
-            string[] words = File.ReadAllLines("commonwords.txt");
-            List<string> possibleWords = new List<string>();
-            foreach(string w in words)
-            {
-                var testDict = new Dictionary<char, int>(charDict);
-                bool hasWord = true;
-                foreach(char c in w)
+                catch (Exception)
                 {
-                    if (testDict.ContainsKey(c))
-                    {
-                        testDict[c]--;
-                        if (testDict[c] <= 0) testDict.Remove(c);
-                    }
-                    else { hasWord = false; break; }
-                }
-
-                if (hasWord) possibleWords.Add(w);
-            }
-
-            List<string> anagrams = new List<string>();
-            foreach(string w1 in possibleWords)
-            {
-                foreach(string w2 in possibleWords)
-                {
-                    foreach(string w3 in possibleWords)
-                    {
-                        string anagram = "";
-                        var testDict = new Dictionary<char, int>(charDict);
-                        var allChars = w1 + " " + w2 + " " + w3;
-
-                        string potWord = "";
-                        foreach (char c in allChars)
-                        {
-                            if (c == ' ')
-                            {
-
-                                anagram += potWord + ' ';
-                                potWord = "";
-
-                                if (testDict.Keys.Count() == 0) {
-                                    if (!anagrams.Contains(anagram) || anagram == text)
-                                        anagrams.Add(anagram);
-                                    break;
-                                }
-                            }
-                            else if (testDict.ContainsKey(c))
-                            {
-                                testDict[c]--;
-                                if (testDict[c] <= 0) testDict.Remove(c);
-                                potWord += c;
-                            }
-                            else break;
-                        }
-                    }
+                    //Console.WriteLine("bah bah bah");
                 }
             }
 
+
+            string[] anagrams = new string[0];
             int anagramCount = anagrams.Count();
             int loopCount;
             if (anagramCount > 10) loopCount = 10;
@@ -127,6 +76,12 @@ namespace HeartlyBot
             else await ReplyAsync("No anagrams found.");
         }
         
+        public static int Hash(string str)
+        {
+            int total = 0;
+            foreach (char c in str) total += c;
+            return total;
+        }
 
         public static Color GetColor(IUser User)
         {
