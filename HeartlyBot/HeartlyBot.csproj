@@ -154,9 +154,12 @@
     <Compile Include="JEmbed.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schedule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="bin\Debug\Schedules\winter2020monday.csv" />
+    <None Include="bin\Debug\winter2020monday.csv" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

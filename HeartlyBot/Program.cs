@@ -8,6 +8,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
 using System.IO;
+using VarietyScheduler;
 
 namespace HeartlyBot
 {
@@ -37,6 +38,9 @@ namespace HeartlyBot
                 // Connect the client to Discord's gateway
                 await client.StartAsync();
                 Console.WriteLine("Bot successfully intialized\n");
+
+                LoadSchedules();
+
                 // Block this task until the program is exited.
                 await Task.Delay(-1);
             }
@@ -65,7 +69,6 @@ namespace HeartlyBot
         public async Task InstallCommands()
         {
             client.MessageReceived += HandleCommand;
-            client.Ready += HandleReady;
             await commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
@@ -87,16 +90,15 @@ namespace HeartlyBot
             else return;
         }
 
-        public async Task HandleReady()
+        private void LoadSchedules()
         {
-            foreach (IGuild g in client.Guilds)
+            List<Schedule> scheds = new List<Schedule>();
+            foreach (var file in Directory.GetFiles("Schedules"))
             {
-                Console.WriteLine(g.Name + " " + g.Id);
-                var invites = await g.GetInvitesAsync();
-
-                Console.WriteLine(invites.FirstOrDefault());
-                Console.Beep();
+                var scheduleFile = File.ReadAllLines(file);
+                scheds.Add(new Schedule(scheduleFile));
             }
+            Schedule.Schedules = scheds.ToArray();
         }
 
     }

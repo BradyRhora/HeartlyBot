@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using VarietyScheduler;
 
 namespace HeartlyBot
 {
@@ -33,7 +34,7 @@ namespace HeartlyBot
             }
             await Context.Channel.SendMessageAsync("", embed: emb.Build());
         }
-    
+
         [Command("ping"), Summary("Pong!")]
         public async Task Ping()
         {
@@ -46,7 +47,7 @@ namespace HeartlyBot
             text = text.ToLower();
             var hashedDictionary = new Dictionary<string, int>();
             var words = File.ReadAllLines("commonwords.txt");
-            foreach(string word in words)
+            foreach (string word in words)
             {
                 try
                 {
@@ -75,12 +76,30 @@ namespace HeartlyBot
             if (anagramCount > 0) await ReplyAsync(anagramCount + " anagram(s) found: " + aList);
             else await ReplyAsync("No anagrams found.");
         }
-        
+
         public static int Hash(string str)
         {
             int total = 0;
             foreach (char c in str) total += c;
             return total;
+        }
+
+        [Command("GetSchedule"), Summary("View your schedule for the current session."), Alias("gs")]
+        public async Task GetSchedule([Remainder] string name)
+        {
+            var shifts = Schedule.GetEmployeeShifts(name);
+
+            string msg = $"Here are {shifts[0].EmployeeName}'s shifts:```\n";
+            foreach(var day in shifts)
+            {
+                msg += day.Weekday + ":\n";
+                foreach (var group in day.GroupedPositions)
+                    msg += $"{group.PositionName}: {group.StartTime.ToString("h:mm tt")} - {group.EndTime.ToString("h:mm tt")}\n";
+                
+            }
+            msg += "```";
+            await ReplyAsync(msg);
+            
         }
 
         public static Color GetColor(IUser User)
